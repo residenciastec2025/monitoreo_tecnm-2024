@@ -21,7 +21,7 @@ function setupFonts() {
         'Montserrat-Regular.ttf', 'Montserrat-Bold.ttf', 'Montserrat-Italic.ttf', 'Montserrat-BoldItalic.ttf'
     ];
     fontFiles.forEach(font => {
-        const fontPath = path.resolve('../api_server/src/assets/fonts', font);
+        const fontPath = path.resolve('../src/src/assets/fonts', font);
         pdfMake.vfs[font] = fs.readFileSync(fontPath).toString('base64');
     });
 }
@@ -41,8 +41,8 @@ function getHeaderAndLogos(subject, teacher, group, unit, percentages, totalStud
     return [
         {
             columns: [
-                { image: convertImageToBase64URL('../api_server/src/assets/tnm_logo.png'), fit: [100, 100] },
-                { image: convertImageToBase64URL('../api_server/src/assets/itc.png'), fit: [60, 100], alignment: 'right' }
+                { image: convertImageToBase64URL('../src/src/assets/tnm_logo.png'), fit: [100, 100] },
+                { image: convertImageToBase64URL('../src/src/assets/itc.png'), fit: [60, 100], alignment: 'right' }
             ]
         },
         { text: 'INSTITUTO TECNOLÓGICO DE CUAUTLA', style: 'mainHeader' },

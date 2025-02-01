@@ -38,7 +38,7 @@ function setupFonts() {
     ];
     fontFiles.forEach(font => {
         try {
-            const fontPath = path.resolve('../api_server/src/assets/fonts', font);
+            const fontPath = path.resolve('../src/src/assets/fonts', font);
             pdfMake.vfs[font] = fs.readFileSync(fontPath).toString('base64');
         } catch (error) {
             console.error(`Error loading font file ${font}:`, error);
@@ -120,11 +120,11 @@ export async function exportStatisticsPDF(group, subject, teacher, students, fil
                 {
                     columns: [
                         {
-                            image: convertImageToBase64URL('../api_server/src/assets/tnm_logo.png'),
+                            image: convertImageToBase64URL('../src/src/assets/tnm_logo.png'),
                             fit: [100, 100]
                         },
                         {
-                            image: convertImageToBase64URL('../api_server/src/assets/itc.png'),
+                            image: convertImageToBase64URL('../src/src/assets/itc.png'),
                             fit: [60, 100],
                             alignment : 'right'
                         },
@@ -233,11 +233,11 @@ export async function exportStatisticsPDF(group, subject, teacher, students, fil
                 {
                     columns: [
                         {
-                            image: convertImageToBase64URL('../api_server/src/assets/tnm_logo.png'),
+                            image: convertImageToBase64URL('../src/src/assets/tnm_logo.png'),
                             fit: [100, 100]
                         },
                         {
-                            image: convertImageToBase64URL('../api_server/src/assets/itc.png'),
+                            image: convertImageToBase64URL('../src/src/assets/itc.png'),
                             fit: [60, 100],
                             alignment : 'right'
                         },
