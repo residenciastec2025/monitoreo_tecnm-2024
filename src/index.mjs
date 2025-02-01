@@ -13,6 +13,7 @@ const port = process.env.PORT || 3000;
 const allowedOrigins = [
     'http://localhost:4200',
     'https://itc-calificraciones.vercel.app',
+    'adorable-gumdrop-f8e115.netlify.app'
 ];
 
 //Json
