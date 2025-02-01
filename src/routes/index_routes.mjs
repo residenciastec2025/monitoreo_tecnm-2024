@@ -16,5 +16,8 @@ router.use('/api/v1/itc/students', students);
 router.use('/api/v1/itc/group', group);
 router.use('/api/v1/itc/subjects', subjects);
 router.use('/api/v1/itc/period', period);
+router.get('/api/v1/itc/conn', (req, res) => {
+    res.send('Enpoint de prueba para ver si funcion en host');
+});
 
 export default router;
