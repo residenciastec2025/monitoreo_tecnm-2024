@@ -11,8 +11,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const allowedOrigins = [
-    'http://localhost:4200',
-    'https://itc-calificraciones.vercel.app',
+    // 'http://localhost:4200',
+    // 'https://itc-calificraciones.vercel.app',
     'https://monitoreocuautlatecnm.netlify.app'
 ];
 
