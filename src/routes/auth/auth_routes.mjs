@@ -16,5 +16,6 @@ router.post('/access-code/validate', controllers.validateAccessCode);
 router.get('/account-type', authToken(), controllers.identifyUserType);
 router.get('/info', authToken(), controllers.infoUser);
 router.get('/is-logged', controllers.authUser);
+router.post('/logout', controllers.logoutUser);
 
 export default router;

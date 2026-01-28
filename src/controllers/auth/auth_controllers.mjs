@@ -154,3 +154,17 @@ export const identifyUserType = async(req, res) => {
         handleServerError(res, error);
     }
 }
+
+export const logoutUser = async (req, res) => {
+  res.clearCookie('session', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/'
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: 'Sesión cerrada'
+  });
+};
