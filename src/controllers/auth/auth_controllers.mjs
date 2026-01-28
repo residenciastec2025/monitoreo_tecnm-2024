@@ -20,8 +20,11 @@ export const loginUser = async(req, res) => {
             await userUtils.updateLastSession(user.correo, user.cuenta);
             const { token } = await userUtils.createToken(user);
             res.cookie('session', token, {
-                httpOnly : false,
-                signed : true,
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none', 
+                maxAge: 8 * 60 * 60 * 1000,
+                path: '/'
             });
             return res.status(200).json({
                 success : true,
