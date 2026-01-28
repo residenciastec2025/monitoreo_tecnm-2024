@@ -5,7 +5,7 @@ dotenv.config();
 export default function authToken(){
     const allowedUsers = ['Administrador', 'Docente'];
     return async function(req, res, next){
-        const token = req.signedCookies.session;
+        const token = req.cookies.session;
         if(!token){
             return res.status(401).json({
                 success : false,

@@ -5,7 +5,7 @@ dotenv.config();
 export default function adminToken(){
     const allowedUsers = ['Administrador'];
     return async function(req, res, next){
-        const token = req.signedCookies.session;
+        const token = req.cookies.session;
         console.log(token);
         if(!token){
             return res.status(401).json({
