@@ -15,5 +15,6 @@ router.post('/period-register', adminToken(), controllers.createPeriod);
 router.get('/period-descriptions', authToken(), controllers.descriptionPeriodsByCareers);
 router.get('/period-careers', authToken(), controllers.periodsByCareer);
 router.get('/period-export/pdf', authToken(), controllers.exportPeriodsByCareerPDF);
+router.delete('/period-delete/:id', adminToken(), controllers.deletePeriodByID);
 
 export default router;

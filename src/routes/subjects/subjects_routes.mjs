@@ -17,5 +17,6 @@ router.post('/upload-subjects', upload.single('file'), adminToken(), controllers
 router.get('/subjects-by-career', authToken(), controllers.subjectsByCareer);
 router.get('/subjects-keys-career', authToken(), controllers.keySubjectsByCareer);
 router.get('/subjects-by-careers-and-period/:period', authToken(), controllers.subjectsByCareersAndPeriod);
+router.delete('/subjects-delete/:id', adminToken(), controllers.deleteSubjects);
 
 export default router;

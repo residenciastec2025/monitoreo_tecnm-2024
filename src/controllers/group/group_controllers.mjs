@@ -88,6 +88,54 @@ export const allGroups = async(req, res) => {
     }
 }
 
+export const allGroupsOfPeriod = async(req, res) => {
+   try {
+        const searchQuery = req.query.search;
+        const page = parseInt(req.query.page, 10) || 1;
+        const pageSize = parseInt(req.query.pageSize, 10) || 10;
+
+        const groups = await groupModel.find({ periodo : req.params.period });
+        const idSubjects = groups.map(group => group.materia);
+
+        let matchQuery = { "materias._id": { $in: idSubjects } };
+        if (searchQuery) {
+            matchQuery["$or"] = [
+                {"materias.nombreMateria": {$regex: searchQuery, $options: 'i'}},
+                {"materias.claveMateria": {$regex: searchQuery, $options: 'i'}}
+            ];
+        }
+        const subjectsAggregateQuery = [
+            { $unwind: "$materias" },
+            { $match: matchQuery },
+            { $sort: { "materias.nombreMateria": 1 } },
+            { $skip: (page - 1) * pageSize },
+            { $limit: pageSize },
+            {
+                $project: {
+                    _id: "$materias._id",
+                    nombreMateria: "$materias.nombreMateria",
+                    claveMateria: "$materias.claveMateria",
+                    semestreMateria: "$materias.semestreMateria",
+                    descripcionMateria: "$materias.descripcionMateria"
+                }
+            }
+        ];
+        const subjects = await subjectsModel.aggregate(subjectsAggregateQuery);
+        const total = await subjectsModel.countDocuments(matchQuery);
+        return res.status(200).json({
+            success: true,
+            currentPage: page,
+            pageSize: pageSize,
+            totalItems: total,
+            totalPages: Math.ceil(total / pageSize),
+            groups: groups,
+            subjects: subjects
+        });
+    } catch (error) {
+        handleServerError(res, error);
+    }
+}
+
 export const groupHistory = async(req, res) => {
     try {
         const searchQuery = req.query.search;

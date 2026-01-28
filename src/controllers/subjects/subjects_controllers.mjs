@@ -112,3 +112,26 @@ export const subjectsByCareersAndPeriod = async(req, res) => {
         handleServerError(res, error);
     }
 }
+
+export const deleteSubjects = async(req, res) => {
+    try{
+        const id = req.params.id;
+
+        const deleteSubjects = await subjectsModel.findByIdAndDelete(id);
+
+        if(!deleteSubjects){
+           return res.status(400).json({
+                success : false,
+                message : 'No se ha encontrado la reticula'
+            }); 
+        }
+        
+        return res.status(200).json({
+            success : true,
+            message : 'Reticula eliminada'
+        });
+
+    }catch(error){
+        handleServerError(res, error);
+    }
+}

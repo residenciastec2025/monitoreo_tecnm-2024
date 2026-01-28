@@ -11,9 +11,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const allowedOrigins = [
-    // 'http://localhost:4200',
+    'http://localhost:4200',
     // 'https://itc-calificraciones.vercel.app',
-    'https://monitoreocuautlatecnm.netlify.app'
+    //'https://monitoreocuautlatecnm.netlify.app'
 ];
 
 //Json
@@ -32,8 +32,10 @@ app.use(function (req, res, next) {
     next();
 });
 connectToMongoDB();
+
 //Rutas
 app.use(router);
+
 //Puerto
 app.listen(port, async () => {
     console.log(`API Server on port ${port}`);

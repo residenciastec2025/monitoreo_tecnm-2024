@@ -95,6 +95,7 @@ export const periodsByCareer = async(req, res) => {
         const subjectsResults = await Promise.all(subjectsPromises);
 
         const cleanedPeriods = periods.map(period => ({
+            _id : period._id,
             periodo: period.periodo,
             idReticula: period.idReticula,
             fechaRegistro: period.fechaRegistro,
@@ -148,6 +149,29 @@ export const exportPeriodsByCareerPDF = async(req, res) => {
         res.end(buffer); 
 
     }catch(error){
+        handleServerError(res, error);
+    }
+}
+
+export const deletePeriodByID = async(req, res) => {
+    try {
+
+        const idPeriod = req.params.id;
+
+        const deletePeriod = await periodModel.findByIdAndDelete(idPeriod);
+
+        if(!deletePeriod){
+            return res.status(404).json({
+                success : false,
+                message : 'Error al buscar el periodo, revisa la informacion'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message : 'Periodo eliminado correctamente'
+        });
+    } catch (error) {
         handleServerError(res, error);
     }
 }

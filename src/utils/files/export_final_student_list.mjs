@@ -1,28 +1,62 @@
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
+
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { getDateAndTime } from '../date/date_utils.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const ASSETS_PATH = path.join(__dirname, "../../assets");
+const FONTS_PATH = path.join(ASSETS_PATH, "fonts");
+const IMAGES_PATH = ASSETS_PATH;
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const convertImageToBase64URL = (filename, imageType = 'png') => {
-    try {
-        const buffer = fs.readFileSync(filename);
-        const base64String = Buffer.from(buffer).toString('base64');
-        return `data:image/${imageType};base64,${base64String}`;
-    } catch (error) {
-        throw new Error(`File ${filename} does not exist`);
+const convertImageToBase64URL = (absolutePath, imageType = "png") => {
+    if (!fs.existsSync(absolutePath)) {
+        throw new Error(`Image not found: ${absolutePath}`);
     }
+
+    const buffer = fs.readFileSync(absolutePath);
+    return `data:image/${imageType};base64,${buffer.toString("base64")}`;
 };
+
+const convertBufferToBase64URL = (buffer, imageType = "png") =>
+    `data:image/${imageType};base64,${Buffer.from(buffer).toString("base64")}`;
 
 function setupFonts() {
     const fontFiles = [
-        'Montserrat-Regular.ttf', 'Montserrat-Bold.ttf', 'Montserrat-Italic.ttf', 'Montserrat-BoldItalic.ttf'
+        "Montserrat-Black.ttf",
+        "Montserrat-BlackItalic.ttf",
+        "Montserrat-Bold.ttf",
+        "Montserrat-BoldItalic.ttf",
+        "Montserrat-ExtraBold.ttf",
+        "Montserrat-ExtraBoldItalic.ttf",
+        "Montserrat-ExtraLight.ttf",
+        "Montserrat-ExtraLightItalic.ttf",
+        "Montserrat-Italic.ttf",
+        "Montserrat-Light.ttf",
+        "Montserrat-LightItalic.ttf",
+        "Montserrat-Medium.ttf",
+        "Montserrat-MediumItalic.ttf",
+        "Montserrat-Regular.ttf",
+        "Montserrat-SemiBold.ttf",
+        "Montserrat-SemiBoldItalic.ttf",
+        "Montserrat-Thin.ttf",
+        "Montserrat-ThinItalic.ttf"
     ];
+
     fontFiles.forEach(font => {
-        const fontPath = path.resolve('../src/src/assets/fonts', font);
-        pdfMake.vfs[font] = fs.readFileSync(fontPath).toString('base64');
+        const fontPath = path.join(FONTS_PATH, font);
+
+        if (!fs.existsSync(fontPath)) {
+            throw new Error(`Font not found: ${fontPath}`);
+        }
+
+        pdfMake.vfs[font] = fs.readFileSync(fontPath).toString("base64");
     });
 }
 
@@ -30,10 +64,10 @@ setupFonts();
 
 pdfMake.fonts = {
     Montserrat: {
-        normal: 'Montserrat-Regular.ttf',
-        bold: 'Montserrat-Bold.ttf',
-        italics: 'Montserrat-Italic.ttf',
-        bolditalics: 'Montserrat-BoldItalic.ttf'
+        normal: "Montserrat-Regular.ttf",
+        bold: "Montserrat-Bold.ttf",
+        italics: "Montserrat-Italic.ttf",
+        bolditalics: "Montserrat-BoldItalic.ttf"
     }
 };
 
@@ -41,70 +75,44 @@ function getHeaderAndLogos(subject, teacher, group, students) {
     return [
         {
             columns: [
-                { image: convertImageToBase64URL('../src/src/assets/tnm_logo.png'), fit: [100, 100] },
-                { image: convertImageToBase64URL('../src/src/assets/itc.png'), fit: [60, 100], alignment: 'right' }
+                {
+                    image: convertImageToBase64URL(
+                        path.join(IMAGES_PATH, "tnm_logo.png")
+                    ),
+                    fit: [100, 100]
+                },
+                {
+                    image: convertImageToBase64URL(
+                        path.join(IMAGES_PATH, "itc.png")
+                    ),
+                    fit: [60, 100],
+                    alignment: "right"
+                }
             ]
         },
         { text: 'INSTITUTO TECNOLÓGICO DE CUAUTLA', style: 'mainHeader' },
-        { text: 'SISTEMA WEB DE MONITOREO EDUCATIVO ENFOCADO A ÍNDICES DE REPROBACIÓN Y DESERCIÓN ESCOLAR', style: 'header' },
+        {
+            text: 'SISTEMA WEB DE MONITOREO EDUCATIVO ENFOCADO A ÍNDICES DE REPROBACIÓN Y DESERCIÓN ESCOLAR',
+            style: 'header'
+        },
         {
             columns: [
                 {
-                    width: '85%',
+                    width: '75%',
                     stack: [
-                        {
-                            text: [
-                                `DEPARTAMENTO: `,
-                                { text: group.carrera, bold: true, style: 'text' }
-                            ]
-                        },
-                        {
-                            text: [
-                                `MATERIA: `,
-                                { text: subject[0].nombreMateria, bold: true, style: 'text' }
-                            ]
-                        },
-                        {
-                            text: [
-                                `PROFESOR: `,
-                                { text: teacher.nombre, bold: true, style: 'text' }
-                            ]
-                        },
-                        {
-                            text: [
-                                `PERIODO: `,
-                                { text: group.periodo, bold: true, style: 'text' }
-                            ]
-                        }
+                        { text: ['DEPARTAMENTO: ', { text: group.carrera, bold: true }] },
+                        { text: ['MATERIA: ', { text: subject[0].nombreMateria, bold: true }] },
+                        { text: ['PROFESOR: ', { text: teacher.nombre, bold: true }] },
+                        { text: ['PERIODO: ', { text: group.periodo, bold: true }] }
                     ]
                 },
                 {
-                    width: '15%',
+                    width: '25%',
                     stack: [
-                        {
-                            text: [
-                                `GRUPO: `,
-                                { text: group.numeroGrupo, bold: true, style: 'text' }
-                            ]
-                        },
-                        {
-                            text: [
-                                `UNIDAD: `,
-                                { text: 'Final', bold: true, style: 'text' }
-                            ]
-                        },
-                        {
-                            text: [
-                                `CLAVE: `,
-                                { text: subject[0].claveMateria, bold: true, style: 'text' }
-                            ]
-                        },
-                        {
-                            text: [
-                                `ALUMNOS: `,
-                                { text: students, bold: true, style: 'text' }
-                            ]
-                        }
+                        { text: ['GRUPO: ', { text: group.numeroGrupo, bold: true }] },
+                        { text: ['UNIDAD: ', { text: 'Final', bold: true }] },
+                        { text: ['CLAVE: ', { text: subject[0].claveMateria, bold: true }] },
+                        { text: ['ALUMNOS: ', { text: students, bold: true }] }
                     ]
                 }
             ],
@@ -118,94 +126,119 @@ function generateFinalTable(percentages) {
         ['Alumnos aprobados', percentages.aprobados, percentages.aprobadosPorcentaje],
         ['Alumnos reprobados', percentages.reprobados, percentages.reprobadosPorcentaje],
         ['Alumnos desertados', percentages.desertados, percentages.desertadosPorcentaje],
-        ['Total', percentages.total, '100%'],
+        ['Total', percentages.total, '100%']
     ];
-    
+
     return {
         table: {
-            headerRows: 1,
-            widths: ['auto', '10%', '10%'], 
-            body: [
-                ...tableBody.map(row => row.map(cell => ({text: cell, style: 'tableData'})))
-            ],
+            widths: ['*', '15%', '15%'],
+            body: tableBody.map(row =>
+                row.map(cell => ({ text: cell, style: 'tableData' }))
+            )
         },
-        margin: [0, 24, 0, 0],
+        margin: [0, 24, 0, 0]
     };
 }
 
-function generateFooter(fecha){
+function generateFooter(fecha) {
     return [
-        { text: '________________________________________', margin: [0, 50, 0, 10], style: 'tableData' },
-        { text: 'Firma del profesor', margin: [0, 0, 0, 10], style: 'tableData' }, 
-        { text: 'Este documento no es válido si tiene tachaduras o enmendaduras', margin: [0, 0, 0, 10], style: 'tableData' }, 
-        { text: `Yecapixtla, Morelos a ${fecha}`, margin: [0, 0, 0, 10], style: 'tableData' }, 
+        {
+            text: '________________________________________',
+            margin: [0, 50, 0, 10],
+            style: 'tableData',
+            alignment: 'center'
+        },
+        {
+            text: 'Firma del profesor',
+            margin: [0, 0, 0, 10],
+            style: 'tableData',
+            alignment: 'center'
+        },
+        {
+            text: 'Este documento no es válido si tiene tachaduras o enmendaduras',
+            style: 'tableData',
+            alignment: 'center'
+        },
+        {
+            text: `Yecapixtla, Morelos a ${fecha}`,
+            style: 'tableData',
+            alignment: 'center'
+        }
     ];
 }
 
-export async function exportFinalAverageList(group, subject, teacher, students, percentages, totalStudents){
-    return new Promise(async (resolve, reject) => {
-        const headers = ['No.', 'Nombre', ...students[0].promediosUnidad.map((_, idx) => `U ${idx + 1}`), 'Promedio'];
-        const { fecha, hora } = await getDateAndTime();
-        
-        const docDefinition = {
-            content: [],
-            footer: function(currentPage, pageCount) {
-                return {
-                    columns: [
-                        {
-                            text: currentPage.toString(),
-                            alignment: 'right',
-                            margin: [0, 0, 40, 30]
-                        }
+
+export async function exportFinalAverageList(
+    group,
+    subject,
+    teacher,
+    students,
+    percentages,
+    totalStudents
+) {
+    const { fecha } = await getDateAndTime();
+
+    const headers = [
+        'No.',
+        'Nombre',
+        ...students[0].promediosUnidad.map((_, i) => `U ${i + 1}`),
+        'Promedio'
+    ];
+
+    const docDefinition = {
+        content: [],
+        styles: {
+            mainHeader: { fontSize: 12, bold: true, alignment: 'center', margin: [0, 10, 0, 10] },
+            header: { fontSize: 12, bold: true, alignment: 'justify', margin: [0, 0, 0, 10] },
+            tableHeader: { fontSize: 10, bold: true, color: '#FFF', fillColor: '#18316B', alignment: 'center' },
+            tableDataName: { fontSize: 8, alignment: 'left' },
+            tableData: { fontSize: 8, alignment: 'center' },
+            text: { fontSize: 10, margin: [0, 0, 0, 10] }
+        },
+        defaultStyle: { font: 'Montserrat' },
+        footer: page => ({
+            text: page.toString(),
+            alignment: 'right',
+            margin: [0, 0, 40, 30]
+        })
+    };
+
+    docDefinition.content.push(
+        ...getHeaderAndLogos(subject, teacher, group, totalStudents)
+    );
+
+    students.forEach((student, index) => {
+        if (index % 30 === 0) {
+            if (index !== 0) {
+                docDefinition.content.push({ text: '', pageBreak: 'before' });
+                docDefinition.content.push(
+                    ...getHeaderAndLogos(subject, teacher, group, totalStudents)
+                );
+            }
+
+            docDefinition.content.push({
+                table: {
+                    headerRows: 1,
+                    widths: ['5%', '*', ...student.promediosUnidad.map(() => 'auto'), '15%'],
+                    body: [
+                        headers.map(h => ({ text: h, style: 'tableHeader' })),
                     ]
-                };
-            },
-            styles: {
-                mainHeader: {fontSize: 12, bold: true, alignment: 'center', margin: [0, 10, 0, 10], font: 'Montserrat'},
-                header: {fontSize: 12, bold: true, alignment: 'justify', margin: [0, 0, 0, 10], font: 'Montserrat'},
-                tableHeader: {fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#18316B', alignment: 'center'},
-                tableDataName: { fontSize: 8, alignment: 'left', font: 'Montserrat' },
-                tableData: {fontSize: 8, alignment: 'center', font: 'Montserrat'},
-                text: {fontSize: 10, alignment: 'left', margin: [0, 0, 0, 10], font: 'Montserrat'}
-            },
-            defaultStyle: {
-                font: 'Montserrat'
-            }
-        };
+                }
+            });
+        }
 
-        docDefinition.content.push(...getHeaderAndLogos(subject, teacher, group, totalStudents));
+        docDefinition.content.at(-1).table.body.push([
+            { text: index + 1, style: 'tableData' },
+            { text: student.nombre, style: 'tableDataName' },
+            ...student.promediosUnidad.map(u => ({ text: u, style: 'tableData' })),
+            { text: student.promedioFinal, style: 'tableData' }
+        ]);
+    });
 
-        students.forEach((student, index) => {
-            if (index % 30 === 0 && index !== 0) {
-                docDefinition.content.push({text: '', pageBreak: 'before'});
-                docDefinition.content.push(...getHeaderAndLogos(subject, teacher, group, totalStudents));
-            }
-            const studentData = [
-                {text: index + 1, style: 'tableData'},
-                {text: student.nombre, style: 'tableDataName'},
-                ...student.promediosUnidad.map(unitScore => ({text: unitScore.toString(), style: 'tableData'})),
-                {text: student.promedioFinal.toString(), style: 'tableData'}
-            ];
+    docDefinition.content.push(generateFinalTable(percentages));
+    docDefinition.content.push(generateFooter(fecha));
 
-            if(index % 30 === 0) {
-                docDefinition.content.push({
-                    table: {
-                        headerRows: 1,
-                        widths: ['5%', '*', ...student.promediosUnidad.map(() => 'auto'), '15%'],
-                        body: [headers.map(header => ({text: header, style: 'tableHeader'})), studentData]
-                    }
-                });
-            } else {
-                docDefinition.content[docDefinition.content.length - 1].table.body.push(studentData);
-            }
-        });
-
-        docDefinition.content.push(generateFinalTable(percentages));
-        docDefinition.content.push(generateFooter(fecha));
-
-        const pdfDoc = pdfMake.createPdf(docDefinition);
-        pdfDoc.getBuffer(buffer => {
-            resolve(buffer);
-        });
+    return new Promise(resolve => {
+        pdfMake.createPdf(docDefinition).getBuffer(resolve);
     });
 }

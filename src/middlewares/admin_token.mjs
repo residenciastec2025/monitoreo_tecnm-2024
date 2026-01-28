@@ -6,6 +6,7 @@ export default function adminToken(){
     const allowedUsers = ['Administrador'];
     return async function(req, res, next){
         const token = req.signedCookies.session;
+        console.log(token);
         if(!token){
             return res.status(401).json({
                 success : false,
@@ -13,7 +14,7 @@ export default function adminToken(){
             });
         }
         try{
-            const decoded = await jwt.verify(token, process.env.SECRET);
+            const decoded = jwt.verify(token, process.env.SECRET);
             if(!decoded || !allowedUsers.includes(decoded.account)){
                 return res.status(403).json({
                     success: false,

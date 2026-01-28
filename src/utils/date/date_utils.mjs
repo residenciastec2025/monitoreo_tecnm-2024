@@ -1,17 +1,16 @@
-import axios from 'axios';
-import moment from 'moment';
+export function getDateAndTime() {
+    const now = new Date();
 
-export const getDateAndTime = async () => {
-    try {
-        const response = await axios.get('http://worldtimeapi.org/api/timezone/America/Mexico_City');
-        const { date } = response.data;
-        
-        const formattedDate = moment(date).format('DD-MM-YYYY');
-        const formattedTime = moment(date).format('h:mm A');
-        
-        return { fecha: formattedDate, hora: formattedTime };
-    } catch (error) {
-        console.error('Error at getDateAndTimeAPI');
-        throw error;
-    }
+    return {
+        fecha: now.toLocaleDateString("es-MX", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        }),
+        hora: now.toLocaleTimeString("es-MX", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        })
+    };
 }

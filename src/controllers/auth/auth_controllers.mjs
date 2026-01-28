@@ -8,7 +8,6 @@ import randomString from 'randomstring';
 
 export const loginUser = async(req, res) => {
     try{
-        console.log("Si entra al api");
         const { correo, password } = req.body;
         const user = await userUtils.getUserByEmail(correo);
         if(!user){

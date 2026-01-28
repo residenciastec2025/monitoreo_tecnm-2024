@@ -1,5 +1,7 @@
 import * as controllers from '../../controllers/group/group_controllers.mjs';
 import teacherToken from '../../middlewares/teacher_token.mjs';
+import authToken from '../../middlewares/auth_token.mjs';
+import adminToken from '../../middlewares/admin_token.mjs';
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -16,6 +18,7 @@ router.use(cookieParser(secret));
 router.post('/create-group', teacherToken(), controllers.createGroup);
 router.post('/generate-report/:id', upload.array('files') , controllers.generateReport);
 router.get('/all-groups-teacher', teacherToken(), controllers.allGroups);
+router.get('/all-groups-period/:period', adminToken(), controllers.allGroupsOfPeriod);
 router.get('/teacher-group-history', teacherToken(), controllers.groupHistory);
 router.get('/info-group/:id', teacherToken(), controllers.infoGroup);
 router.get('/info-group-units/:id', teacherToken(), controllers.unitsGroup);
