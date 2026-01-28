@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export async function getUserIdFromCookie(req){
-    const cookie = req.signedCookies.session;
+    const cookie = req.cookies.session;
     if (!cookie) {
         throw new Error('Cookie session no encontrada');
     }
