@@ -6,7 +6,6 @@ import { handleServerError } from '../../utils/handle/handle_server.mjs';
 import * as userUtils from '../../utils/user/user_utils.mjs';
 import { getDateAndTime } from '../../utils/date/date_utils.mjs';
 import { exportAdmins } from '../../utils/files/export_admins.mjs';
-import { sendEmailVerificationCode } from '../../utils/emails/email_utils.mjs';
 
 // controlador para registrar un nuevo administrador en el sistema
 export const createAdminAccount = async(req, res) => {
@@ -49,13 +48,6 @@ export const createAdminAccount = async(req, res) => {
 
         // Guardar en mongodb
         await admin.save(); 
-
-        // Generar código de verificación
-        const verificationCode = randomString.generate(6);
-
-        // Actualizar el código de verificación en la base de datos
-        await userUtils.updateVerificationCode(admin, verificationCode);
-        await sendEmailVerificationCode(admin.correo, body.password, verificationCode);
 
         // respuesta donde se confirma que el usuario se ha registrado
         return res.status(200).json({
