@@ -100,13 +100,14 @@ function getHeaderAndLogos({ carrera = 'No especificada', date = 'N/A' } = {}) {
             style: 'header',
         },
         {
-            text: [
-                'Información de todos los docentes de la carrera ',
-                { text: carrera, decoration: 'underline' },
-                ' registrados en el sistema hasta ',
-                { text: `${date}.`, decoration: 'underline' },
+            stack : [
+                {
+                    text: [
+                        'Información de todos los administradores registrados en el sistema hasta ', {text: `${date}.`, decoration: 'underline'},
+                    ]
+                }
             ],
-            style: 'text',
+            style : 'text'
         },
         { text: '', margin: [0, 0, 0, 10] },
     ];
