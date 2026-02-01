@@ -12,6 +12,7 @@ const router = express.Router();
 router.use(cookieParser(secret));
 router.post('/create-account', adminToken(), controllers.createAdminAccount);
 router.get('/list-all-admins', adminToken(),  controllers.listAllAdmins);
+router.get('/export-admins', adminToken(), controllers.exportAdminsPDF);
 router.delete('/delete-admin-account/:id', adminToken(),  controllers.deleteAdmin);
 
 export default router;
